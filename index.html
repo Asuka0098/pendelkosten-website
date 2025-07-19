@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Berechnung der Pendelkosten</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background: #f6f8fa;
+        }
+        .container {
+            max-width: 480px;
+            margin: 40px auto 0 auto;
+            background: #fff;
+            border-radius: 18px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+            padding: 32px 32px 24px 32px;
+            position: relative;
+            z-index: 1;
+        }
+        .center {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 {
+            text-align: center;
+            font-size: 2.1em;
+            margin-bottom: 0.5em;
+        }
+        .illustration {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 18px;
+        }
+        label {
+            display: block;
+            margin-top: 10px;
+            font-weight: 500;
+        }
+        input, select, button {
+            margin-top: 5px;
+            margin-bottom: 10px;
+            width: 100%;
+            font-size: 1em;
+            border-radius: 6px;
+            border: 1px solid #d0d7de;
+            padding: 8px 10px;
+            box-sizing: border-box;
+        }
+        input[type="checkbox"] {
+            width: auto;
+            margin-right: 8px;
+        }
+        button, .oil-link {
+            background: #0077cc;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        button:hover, .oil-link:hover {
+            background: #005fa3;
+        }
+        .oil-link {
+            display: inline-block;
+            margin-left: 8px;
+            padding: 8px 12px;
+            text-decoration: none;
+            font-size: 0.98em;
+            border-radius: 6px;
+        }
+        .hidden { display: none; }
+        .result {
+            border: 1px solid #e0e4ea;
+            background: #fafdff;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            padding: 18px;
+            margin-top: 20px;
+            text-align: left;
+        }
+        .saved-results {
+            margin-top: 30px;
+        }
+        .saved-item {
+            border: 1px solid #e0e4ea;
+            background: #fafdff;
+            border-radius: 10px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        /* Google Ads 右侧广告位 */
+        .ads-slot {
+            position: fixed;
+            top: 80px;
+            width: 300px;
+            background: #f3f3f3;
+            border: 2px dashed #bbb;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #888;
+            font-size: 1.2em;
+            z-index: 10;
+            padding-bottom: 20px;
+        }
+        .ads-slot { right: 40px; }
+        .ads-slot-left { left: 40px; }
+        @media (max-width: 1300px) {
+            .ads-slot, .ads-slot-left { display: none; }
+        }
+        @media (max-width: 600px) {
+            .container { padding: 12px 2vw; }
+        }
+    </style>
+</head>
+<body>
+    <div class="ads-slot" id="adsSlot" style="right:40px;">
+        <div id="adsenseContainer1" style="width:300px;height:250px;display:flex;align-items:center;justify-content:center;margin-bottom:20px;">
+            <span style="color:#bbb;">Google Ads</span>
+        </div>
+        <div id="adsenseContainer2" style="width:300px;height:600px;display:flex;align-items:center;justify-content:center;">
+            <span style="color:#bbb;">Google Ads</span>
+        </div>
+    </div>
+    <div class="ads-slot ads-slot-left" id="adsSlotLeft" style="left:40px;">
+        <div id="adsenseContainer3" style="width:300px;height:250px;display:flex;align-items:center;justify-content:center;margin-bottom:20px;">
+            <span style="color:#bbb;">Google Ads</span>
+        </div>
+        <div id="adsenseContainer4" style="width:300px;height:600px;display:flex;align-items:center;justify-content:center;">
+            <span style="color:#bbb;">Google Ads</span>
+        </div>
+    </div>
+    <div style="text-align:center;color:#b94a48;background:#fff3cd;padding:10px 0 6px 0;font-size:1em;">
+        Hinweis: Diese Seite ist rein statisch. Bei ungewöhnlichen Zugriffen oder Problemen bitte später erneut versuchen. Für DDOS-Schutz empfiehlt sich die Nutzung von CDN/Cloudflare.
+    </div>
+    <div class="container center">
+        <div class="illustration">
+            <!-- 简单SVG插画：城市+汽车+公交 -->
+            <svg width="120" height="60" viewBox="0 0 120 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="5" y="35" width="20" height="20" rx="3" fill="#b3d0f7"/>
+                <rect x="30" y="25" width="18" height="30" rx="3" fill="#d1e7dd"/>
+                <rect x="52" y="40" width="30" height="15" rx="5" fill="#f7c873"/>
+                <circle cx="60" cy="55" r="4" fill="#888"/>
+                <circle cx="78" cy="55" r="4" fill="#888"/>
+                <rect x="90" y="38" width="22" height="12" rx="3" fill="#b3d0f7"/>
+                <rect x="92" y="42" width="6" height="6" rx="1" fill="#fff"/>
+                <rect x="104" y="42" width="6" height="6" rx="1" fill="#fff"/>
+                <rect x="0" y="58" width="120" height="2" fill="#bbb"/>
+            </svg>
+        </div>
+        <h1>Pendelkostenrechner</h1>
+        <form id="commuteForm" style="width:100%;max-width:350px;">
+            <label>Entfernung (einfach, km):
+                <input type="number" id="distance" min="0.1" max="1000" step="0.1" required>
+            </label>
+            <label>Gesamte Pendelzeit (Hin- und Rückfahrt, Minuten):
+                <input type="number" id="time" min="1" max="600" step="1" required>
+            </label>
+            <label>Verkehrsmittel:
+                <select id="commuteType" required>
+                    <option value="auto">Auto</option>
+                    <option value="oeffentlich">Öffentliche Verkehrsmittel</option>
+                </select>
+            </label>
+            <div id="autoFields">
+                <label>Kraftstoffverbrauch (Liter/100km):
+                    <input type="number" id="fuelConsumption" min="1" max="30" step="0.1">
+                </label>
+                <label>Kraftstoffpreis (€/Liter):
+                    <input type="number" id="fuelPrice" min="0.5" max="10" step="0.01">
+                    <!-- 油价查询链接已移除 -->
+                </label>
+                <div id="fuelPriceInfo" style="color: #007700; font-size: 0.95em;"></div>
+            </div>
+            <div id="oeffentlichFields" class="hidden">
+                <label>Monatliche Kosten für öffentliche Verkehrsmittel (€):
+                    <input type="number" id="publicCost" min="0" max="1000" step="0.01">
+                </label>
+            </div>
+            <label style="margin-top:16px;">
+                <input type="checkbox" id="includeTimeCost"> Zeitkosten berechnen
+            </label>
+            <div id="salaryField" class="hidden">
+                <label>Monatsnettogehalt (€):
+                    <input type="number" id="monthlySalary" min="0" max="100000" step="0.01">
+                </label>
+                <label>Arbeitstage pro Woche:
+                    <input type="number" id="workDaysPerWeek" min="1" max="7" step="1" value="5">
+                </label>
+            </div>
+            <label>Ergebnisname:
+                <input type="text" id="resultName" maxlength="30" pattern="[A-Za-z0-9 äöüÄÖÜß.,!?:;\-()]+" required>
+            </label>
+            <button type="submit" style="margin-top:18px;">Berechnen & Speichern</button>
+        </form>
+
+        <div id="result" class="result hidden"></div>
+
+        <div class="saved-results" style="width:100%;max-width:350px;">
+            <h2 style="text-align:center;">Gespeicherte Ergebnisse</h2>
+            <div id="savedResults"></div>
+        </div>
+    </div>
+
+    <script>
+        const commuteType = document.getElementById('commuteType');
+        const autoFields = document.getElementById('autoFields');
+        const oeffentlichFields = document.getElementById('oeffentlichFields');
+        const includeTimeCost = document.getElementById('includeTimeCost');
+        const salaryField = document.getElementById('salaryField');
+        const form = document.getElementById('commuteForm');
+        const resultDiv = document.getElementById('result');
+        const savedResultsDiv = document.getElementById('savedResults');
+
+        function updateFields() {
+            if (commuteType.value === 'auto') {
+                autoFields.classList.remove('hidden');
+                oeffentlichFields.classList.add('hidden');
+            } else {
+                autoFields.classList.add('hidden');
+                oeffentlichFields.classList.remove('hidden');
+            }
+        }
+        commuteType.addEventListener('change', updateFields);
+        updateFields();
+
+        includeTimeCost.addEventListener('change', function() {
+            if (this.checked) {
+                salaryField.classList.remove('hidden');
+            } else {
+                salaryField.classList.add('hidden');
+            }
+        });
+
+        function loadResults() {
+            const results = JSON.parse(localStorage.getItem('commuteResults') || '[]');
+            savedResultsDiv.innerHTML = '';
+            if (results.length === 0) {
+                savedResultsDiv.innerHTML = '<em>Keine gespeicherten Ergebnisse.</em>';
+                return;
+            }
+            results.forEach(r => {
+                savedResultsDiv.innerHTML += `<div class="saved-item"><strong>${r.name}</strong><br>${r.summary}</div>`;
+            });
+        }
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            // 校验输入
+            const distance = parseFloat(document.getElementById('distance').value);
+            const time = parseFloat(document.getElementById('time').value);
+            const type = commuteType.value;
+            const name = document.getElementById('resultName').value.trim();
+            if (isNaN(distance) || distance < 0.1 || distance > 1000) { alert('Bitte geben Sie eine gültige Entfernung (0.1-1000 km) ein.'); return; }
+            if (isNaN(time) || time < 1 || time > 600) { alert('Bitte geben Sie eine gültige Pendelzeit (1-600 Minuten) ein.'); return; }
+            if (!name || name.length > 30 || /<\/?script/i.test(name)) { alert('Ungültiger Ergebnisname. Keine Scripte erlaubt, max. 30 Zeichen.'); return; }
+            let cost = 0, timeCost = 0, hourly = 0, monthlySalary = 0, summary = '';
+            let workDays = 22; // 默认
+            if (includeTimeCost.checked) {
+                const workDaysPerWeek = parseFloat(document.getElementById('workDaysPerWeek').value) || 5;
+                if (isNaN(workDaysPerWeek) || workDaysPerWeek < 1 || workDaysPerWeek > 7) { alert('Bitte geben Sie gültige Arbeitstage pro Woche (1-7) ein.'); return; }
+                workDays = workDaysPerWeek * 4.33;
+            }
+
+            if (type === 'auto') {
+                const fuelConsumption = parseFloat(document.getElementById('fuelConsumption').value);
+                const fuelPrice = parseFloat(document.getElementById('fuelPrice').value);
+                if (isNaN(fuelConsumption) || fuelConsumption < 1 || fuelConsumption > 30) { alert('Bitte geben Sie einen gültigen Kraftstoffverbrauch (1-30 L/100km) ein.'); return; }
+                if (isNaN(fuelPrice) || fuelPrice < 0.5 || fuelPrice > 10) { alert('Bitte geben Sie einen gültigen Kraftstoffpreis (0.5-10 €/L) ein.'); return; }
+                const totalDistance = distance * 2 * workDays;
+                const fuelUsed = totalDistance * (fuelConsumption / 100);
+                cost = fuelUsed * fuelPrice;
+                summary += `Monatliche Kraftstoffkosten: €${cost.toFixed(2)}<br>`;
+            } else {
+                const publicCost = parseFloat(document.getElementById('publicCost').value);
+                if (isNaN(publicCost) || publicCost < 0 || publicCost > 1000) { alert('Bitte geben Sie gültige Kosten für öffentliche Verkehrsmittel (0-1000 €) ein.'); return; }
+                cost = publicCost;
+                summary += `Monatliche Kosten für öffentliche Verkehrsmittel: €${cost.toFixed(2)}<br>`;
+            }
+
+            if (includeTimeCost.checked) {
+                monthlySalary = parseFloat(document.getElementById('monthlySalary').value);
+                if (isNaN(monthlySalary) || monthlySalary < 0 || monthlySalary > 100000) { alert('Bitte geben Sie ein gültiges Monatsnettogehalt (0-100000 €) ein.'); return; }
+                hourly = monthlySalary / (workDays * 8);
+                timeCost = time * workDays * (hourly / 60);
+                summary += `Monatliche Zeitkosten: €${timeCost.toFixed(2)} (Stundenlohn: €${hourly.toFixed(2)})<br>`;
+            }
+
+            const totalCost = cost + timeCost;
+            summary += `<strong>Gesamte monatliche Pendelkosten: €${totalCost.toFixed(2)}</strong><br>`;
+            if (monthlySalary > 0) {
+                const percent = (totalCost / monthlySalary) * 100;
+                summary += `Das sind ${(percent).toFixed(2)}% Ihres Nettogehalts.`;
+            }
+
+            resultDiv.innerHTML = `<h3>Ergebnis: ${name}</h3>${summary}`;
+            resultDiv.classList.remove('hidden');
+
+            const results = JSON.parse(localStorage.getItem('commuteResults') || '[]');
+            results.push({ name, summary });
+            localStorage.setItem('commuteResults', JSON.stringify(results));
+            loadResults();
+        });
+
+        loadResults();
+    </script>
+    <!-- Footer with Impressum & Datenschutz -->
+    <footer style="width:100%;background:#f6f8fa;border-top:1px solid #e0e4ea;margin-top:40px;padding:18px 0 10px 0;text-align:center;font-size:1em;">
+        <a href="#" id="impressumLink" style="margin:0 18px;color:#0077cc;text-decoration:underline;">Impressum</a>
+        <a href="#" id="datenschutzLink" style="margin:0 18px;color:#0077cc;text-decoration:underline;">Datenschutz</a>
+    </footer>
+
+    <!-- Impressum Modal -->
+    <div id="impressumModal" style="display:none;position:fixed;z-index:1001;left:0;top:0;width:100vw;height:100vh;background:rgba(0,0,0,0.25);">
+      <div class="modal-content" style="background:#fff;max-width:420px;margin:60px auto;padding:28px 24px 18px 24px;border-radius:12px;box-shadow:0 4px 24px rgba(0,0,0,0.12);position:relative;">
+        <button id="closeImpressum" style="position:absolute;top:10px;right:16px;font-size:1.2em;background:none;border:none;cursor:pointer;">×</button>
+        <h2 style="margin-top:0">Impressum</h2>
+        <p>Angaben gemäß § 5 TMG</p>
+        <p>
+          Max Mustermann<br>
+          Musterstraße 1<br>
+          12345 Musterstadt<br>
+          Deutschland<br>
+          E-Mail: info@example.com
+        </p>
+        <p>Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV:<br>
+          Max Mustermann, Adresse wie oben
+        </p>
+      </div>
+    </div>
+
+    <!-- Datenschutz Modal -->
+    <div id="datenschutzModal" style="display:none;position:fixed;z-index:1001;left:0;top:0;width:100vw;height:100vh;background:rgba(0,0,0,0.25);">
+      <div class="modal-content" style="background:#fff;max-width:420px;margin:60px auto;padding:28px 24px 18px 24px;border-radius:12px;box-shadow:0 4px 24px rgba(0,0,0,0.12);position:relative;">
+        <button id="closeDatenschutz" style="position:absolute;top:10px;right:16px;font-size:1.2em;background:none;border:none;cursor:pointer;">×</button>
+        <h2 style="margin-top:0">Datenschutzerklärung</h2>
+        <p>
+          Wir nehmen den Schutz Ihrer persönlichen Daten sehr ernst. Ihre Daten werden im Rahmen der gesetzlichen Vorschriften geschützt. Diese Website speichert keine personenbezogenen Daten, außer Sie geben diese freiwillig ein (z.B. für Berechnungen). Es werden keine Daten an Dritte weitergegeben.
+        </p>
+        <p>
+          Bei Fragen wenden Sie sich bitte an: info@example.com
+        </p>
+      </div>
+    </div>
+
+    <!-- Cookie Hinweis Banner -->
+    <div id="cookieBanner" style="display:block;position:fixed;bottom:0;left:0;width:100vw;background:#fff3cd;color:#333;padding:12px 0;text-align:center;z-index:1002;box-shadow:0 -2px 8px rgba(0,0,0,0.04);font-size:1em;">
+      Diese Website verwendet Cookies und Google Ads. Mit der Nutzung stimmen Sie der Verwendung zu.
+      <button id="cookieAccept" style="margin-left:18px;padding:4px 18px;border-radius:6px;border:none;background:#0077cc;color:#fff;cursor:pointer;">OK</button>
+      <button id="cookieReject" style="margin-left:10px;padding:4px 18px;border-radius:6px;border:none;background:#bbb;color:#333;cursor:pointer;">Ablehnen</button>
+    </div>
+
+    <script>
+      document.getElementById('impressumLink').onclick = function(e) { e.preventDefault(); document.getElementById('impressumModal').style.display = 'block'; };
+      document.getElementById('datenschutzLink').onclick = function(e) { e.preventDefault(); document.getElementById('datenschutzModal').style.display = 'block'; };
+      // 关闭按钮事件
+      document.getElementById('closeImpressum').onclick = function() { document.getElementById('impressumModal').style.display = 'none'; };
+      document.getElementById('closeDatenschutz').onclick = function() { document.getElementById('datenschutzModal').style.display = 'none'; };
+      // 点击模态框背景关闭
+      document.getElementById('impressumModal').onclick = function(e) {
+        if (e.target === this) this.style.display = 'none';
+      };
+      document.getElementById('datenschutzModal').onclick = function(e) {
+        if (e.target === this) this.style.display = 'none';
+      };
+      // Google Ads 动态加载函数（四个广告位）
+      function loadGoogleAds() {
+        var adsense = document.createElement('script');
+        adsense.async = true;
+        adsense.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js';
+        adsense.setAttribute('data-ad-client', 'ca-pub-XXXXXXXXXXXXXXXX'); // TODO: 替换为你自己的AdSense Publisher ID
+        document.head.appendChild(adsense);
+        // 右1
+        var ad1 = document.createElement('ins');
+        ad1.className = 'adsbygoogle';
+        ad1.style.display = 'block';
+        ad1.style.width = '300px';
+        ad1.style.height = '250px';
+        ad1.setAttribute('data-ad-client', 'ca-pub-XXXXXXXXXXXXXXXX');
+        ad1.setAttribute('data-ad-slot', '1111111111'); // TODO: 替换为你的广告单元ID
+        document.getElementById('adsenseContainer1').innerHTML = '';
+        document.getElementById('adsenseContainer1').appendChild(ad1);
+        // 右2
+        var ad2 = document.createElement('ins');
+        ad2.className = 'adsbygoogle';
+        ad2.style.display = 'block';
+        ad2.style.width = '300px';
+        ad2.style.height = '600px';
+        ad2.setAttribute('data-ad-client', 'ca-pub-XXXXXXXXXXXXXXXX');
+        ad2.setAttribute('data-ad-slot', '2222222222');
+        document.getElementById('adsenseContainer2').innerHTML = '';
+        document.getElementById('adsenseContainer2').appendChild(ad2);
+        // 左1
+        var ad3 = document.createElement('ins');
+        ad3.className = 'adsbygoogle';
+        ad3.style.display = 'block';
+        ad3.style.width = '300px';
+        ad3.style.height = '250px';
+        ad3.setAttribute('data-ad-client', 'ca-pub-XXXXXXXXXXXXXXXX');
+        ad3.setAttribute('data-ad-slot', '3333333333');
+        document.getElementById('adsenseContainer3').innerHTML = '';
+        document.getElementById('adsenseContainer3').appendChild(ad3);
+        // 左2
+        var ad4 = document.createElement('ins');
+        ad4.className = 'adsbygoogle';
+        ad4.style.display = 'block';
+        ad4.style.width = '300px';
+        ad4.style.height = '600px';
+        ad4.setAttribute('data-ad-client', 'ca-pub-XXXXXXXXXXXXXXXX');
+        ad4.setAttribute('data-ad-slot', '4444444444');
+        document.getElementById('adsenseContainer4').innerHTML = '';
+        document.getElementById('adsenseContainer4').appendChild(ad4);
+        (window.adsbygoogle = window.adsbygoogle || []).push({});
+        (window.adsbygoogle = window.adsbygoogle || []).push({});
+        (window.adsbygoogle = window.adsbygoogle || []).push({});
+        (window.adsbygoogle = window.adsbygoogle || []).push({});
+      }
+      // Cookie Banner 按钮事件
+      document.getElementById('cookieAccept').onclick = function() {
+        document.getElementById('cookieBanner').style.display = 'none';
+        window.adsConsent = true;
+        loadGoogleAds();
+      };
+      document.getElementById('cookieReject').onclick = function() {
+        document.getElementById('cookieBanner').style.display = 'none';
+        window.adsConsent = false;
+        document.getElementById('adsenseContainer1').innerHTML = '<span style="color:#bbb;">Google Ads</span>';
+        document.getElementById('adsenseContainer2').innerHTML = '<span style="color:#bbb;">Google Ads</span>';
+        document.getElementById('adsenseContainer3').innerHTML = '<span style="color:#bbb;">Google Ads</span>';
+        document.getElementById('adsenseContainer4').innerHTML = '<span style="color:#bbb;">Google Ads</span>';
+      };
+    </script>
+</body>
+</html> 

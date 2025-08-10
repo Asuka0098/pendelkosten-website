@@ -92,48 +92,45 @@
             padding: 10px;
             margin-bottom: 10px;
         }
-        /* Google Ads 右侧广告位 */
-        .ads-slot {
-            position: fixed;
-            top: 80px;
-            width: 300px;
-            background: #f3f3f3;
-            border: 2px dashed #bbb;
-            border-radius: 12px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            color: #888;
-            font-size: 1.2em;
-            z-index: 10;
-            padding-bottom: 20px;
-        }
-        .ads-slot { right: 40px; }
-        .ads-slot-left { left: 40px; }
-        @media (max-width: 1300px) {
-            .ads-slot, .ads-slot-left { display: none; }
-        }
         @media (max-width: 600px) {
             .container { padding: 12px 2vw; }
+        }
+        /* 语言选择器样式 */
+        .language-selector {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        .language-selector select {
+            padding: 8px 12px;
+            border: 1px solid #d0d7de;
+            border-radius: 6px;
+            background: #fff;
+            font-size: 0.9em;
+            cursor: pointer;
+        }
+        @media (max-width: 600px) {
+            .language-selector {
+                top: 10px;
+                right: 10px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="ads-slot" id="adsSlot" style="right:40px;">
-        <div id="adsenseContainer1" style="width:300px;height:250px;display:flex;align-items:center;justify-content:center;margin-bottom:20px;">
-            <span style="color:#bbb;">Google Ads</span>
-        </div>
-        <div id="adsenseContainer2" style="width:300px;height:600px;display:flex;align-items:center;justify-content:center;">
-            <span style="color:#bbb;">Google Ads</span>
-        </div>
-    </div>
-    <div class="ads-slot ads-slot-left" id="adsSlotLeft" style="left:40px;">
-        <div id="adsenseContainer3" style="width:300px;height:250px;display:flex;align-items:center;justify-content:center;margin-bottom:20px;">
-            <span style="color:#bbb;">Google Ads</span>
-        </div>
-        <div id="adsenseContainer4" style="width:300px;height:600px;display:flex;align-items:center;justify-content:center;">
-            <span style="color:#bbb;">Google Ads</span>
-        </div>
+    <!-- 语言选择器 -->
+    <div class="language-selector">
+        <select id="languageSelect">
+            <option value="de">🇩🇪 Deutsch</option>
+            <option value="en">🇺🇸 English</option>
+            <option value="zh">🇨🇳 中文</option>
+            <option value="fr">🇫🇷 Français</option>
+            <option value="es">🇪🇸 Español</option>
+            <option value="it">🇮🇹 Italiano</option>
+            <option value="nl">🇳🇱 Nederlands</option>
+            <option value="pl">🇵🇱 Polski</option>
+        </select>
     </div>
     <div class="container center">
         <div class="illustration">
@@ -152,45 +149,45 @@
         </div>
         <h1>Pendelkostenrechner</h1>
         <form id="commuteForm" style="width:100%;max-width:350px;">
-            <label>Entfernung (einfach, km):
+            <label for="distance">Entfernung (einfach, km):
                 <input type="number" id="distance" min="0.1" max="1000" step="0.1" required>
             </label>
-            <label>Gesamte Pendelzeit (Hin- und Rückfahrt, Minuten):
+            <label for="time">Gesamte Pendelzeit (Hin- und Rückfahrt, Minuten):
                 <input type="number" id="time" min="1" max="600" step="1" required>
             </label>
-            <label>Verkehrsmittel:
+            <label for="commuteType">Verkehrsmittel:
                 <select id="commuteType" required>
                     <option value="auto">Auto</option>
                     <option value="oeffentlich">Öffentliche Verkehrsmittel</option>
                 </select>
             </label>
             <div id="autoFields">
-                <label>Kraftstoffverbrauch (Liter/100km):
+                <label for="fuelConsumption">Kraftstoffverbrauch (Liter/100km):
                     <input type="number" id="fuelConsumption" min="1" max="30" step="0.1">
                 </label>
-                <label>Kraftstoffpreis (€/Liter):
+                <label for="fuelPrice">Kraftstoffpreis (€/Liter):
                     <input type="number" id="fuelPrice" min="0.5" max="10" step="0.01">
-                    <!-- 油价查询链接已移除 -->
+                    <button type="button" id="getFuelPriceBtn" style="margin-left: 10px; padding: 4px 8px; font-size: 0.8em; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer;">获取实时油价</button>
                 </label>
                 <div id="fuelPriceInfo" style="color: #007700; font-size: 0.95em;"></div>
             </div>
             <div id="oeffentlichFields" class="hidden">
-                <label>Monatliche Kosten für öffentliche Verkehrsmittel (€):
+                <label for="publicCost">Monatliche Kosten für öffentliche Verkehrsmittel (€):
                     <input type="number" id="publicCost" min="0" max="1000" step="0.01">
                 </label>
             </div>
-            <label style="margin-top:16px;">
+            <label for="includeTimeCost" style="margin-top:16px;">
                 <input type="checkbox" id="includeTimeCost"> Zeitkosten berechnen
             </label>
             <div id="salaryField" class="hidden">
-                <label>Monatsnettogehalt (€):
+                <label for="monthlySalary">Monatsnettogehalt (€):
                     <input type="number" id="monthlySalary" min="0" max="100000" step="0.01">
                 </label>
-                <label>Arbeitstage pro Woche:
+                <label for="workDaysPerWeek">Arbeitstage pro Woche:
                     <input type="number" id="workDaysPerWeek" min="1" max="7" step="1" value="5">
                 </label>
             </div>
-            <label>Ergebnisname:
+            <label for="resultName">Ergebnisname:
                 <input type="text" id="resultName" maxlength="30" pattern="[A-Za-z0-9 äöüÄÖÜß.,!?:;\-()]+" required>
             </label>
             <button type="submit" style="margin-top:18px;">Berechnen & Speichern</button>
@@ -205,6 +202,472 @@
     </div>
 
     <script>
+        // 多语言文本数据
+        const translations = {
+            de: {
+                title: "Berechnung der Pendelkosten",
+                h1: "Pendelkostenrechner",
+                distance: "Entfernung (einfach, km):",
+                time: "Gesamte Pendelzeit (Hin- und Rückfahrt, Minuten):",
+                transport: "Verkehrsmittel:",
+                auto: "Auto",
+                public: "Öffentliche Verkehrsmittel",
+                fuelConsumption: "Kraftstoffverbrauch (Liter/100km):",
+                fuelPrice: "Kraftstoffpreis (€/Liter):",
+                getFuelPriceBtn: "Kraftstoffpreise abrufen",
+                loadingBtn: "Laden...",
+                loadingInfo: "Kraftstoffpreise werden abgerufen...",
+                publicCost: "Monatliche Kosten für öffentliche Verkehrsmittel (€):",
+                includeTimeCost: "Zeitkosten berechnen",
+                monthlySalary: "Monatsnettogehalt (€):",
+                workDaysPerWeek: "Arbeitstage pro Woche:",
+                resultName: "Ergebnisname:",
+                calculateButton: "Berechnen & Speichern",
+                savedResults: "Gespeicherte Ergebnisse",
+                noResults: "Keine gespeicherten Ergebnisse.",
+                result: "Ergebnis:",
+                monthlyFuelCost: "Monatliche Kraftstoffkosten: €",
+                monthlyPublicCost: "Monatliche Kosten für öffentliche Verkehrsmittel: €",
+                monthlyTimeCost: "Monatliche Zeitkosten: €",
+                hourlyWage: "Stundenlohn: €",
+                totalMonthlyCost: "Gesamte monatliche Pendelkosten: €",
+                percentageOfSalary: "Das sind % Ihres Nettogehalts.",
+                impressum: "Impressum",
+                privacy: "Datenschutz",
+                // 错误消息
+                invalidDistance: "Bitte geben Sie eine gültige Entfernung (0.1-1000 km) ein.",
+                invalidTime: "Bitte geben Sie eine gültige Pendelzeit (1-600 Minuten) ein.",
+                invalidName: "Ungültiger Ergebnisname. Keine Scripte erlaubt, max. 30 Zeichen.",
+                invalidWorkDays: "Bitte geben Sie gültige Arbeitstage pro Woche (1-7) ein.",
+                invalidFuelConsumption: "Bitte geben Sie einen gültigen Kraftstoffverbrauch (1-30 L/100km) ein.",
+                invalidFuelPrice: "Bitte geben Sie einen gültigen Kraftstoffpreis (0.5-10 €/L) ein.",
+                invalidPublicCost: "Bitte geben Sie gültige Kosten für öffentliche Verkehrsmittel (0-1000 €) ein.",
+                invalidSalary: "Bitte geben Sie ein gültiges Monatsnettogehalt (0-100000 €) ein."
+            },
+            en: {
+                title: "Commute Cost Calculator",
+                h1: "Commute Cost Calculator",
+                distance: "Distance (one way, km):",
+                time: "Total commute time (round trip, minutes):",
+                transport: "Transportation:",
+                auto: "Car",
+                public: "Public Transport",
+                fuelConsumption: "Fuel consumption (L/100km):",
+                fuelPrice: "Fuel price ($/L):",
+                getFuelPriceBtn: "Get Real-time Price",
+                loadingBtn: "Loading...",
+                loadingInfo: "Fetching real-time fuel prices...",
+                publicCost: "Monthly cost for public transport ($):",
+                includeTimeCost: "Calculate time cost",
+                monthlySalary: "Monthly net salary ($):",
+                workDaysPerWeek: "Work days per week:",
+                resultName: "Result name:",
+                calculateButton: "Calculate & Save",
+                savedResults: "Saved Results",
+                noResults: "No saved results.",
+                result: "Result:",
+                monthlyFuelCost: "Monthly fuel cost: $",
+                monthlyPublicCost: "Monthly public transport cost: $",
+                monthlyTimeCost: "Monthly time cost: $",
+                hourlyWage: "Hourly wage: $",
+                totalMonthlyCost: "Total monthly commute cost: $",
+                percentageOfSalary: "That's % of your net salary.",
+                impressum: "Imprint",
+                privacy: "Privacy Policy",
+                // 错误消息
+                invalidDistance: "Please enter a valid distance (0.1-1000 km).",
+                invalidTime: "Please enter a valid commute time (1-600 minutes).",
+                invalidName: "Invalid result name. No scripts allowed, max. 30 characters.",
+                invalidWorkDays: "Please enter valid work days per week (1-7).",
+                invalidFuelConsumption: "Please enter a valid fuel consumption (1-30 L/100km).",
+                invalidFuelPrice: "Please enter a valid fuel price (0.5-10 $/L).",
+                invalidPublicCost: "Please enter valid public transport cost (0-1000 $).",
+                invalidSalary: "Please enter a valid monthly net salary (0-100000 $)."
+            },
+            zh: {
+                title: "通勤成本计算器",
+                h1: "通勤成本计算器",
+                distance: "距离（单程，公里）：",
+                time: "总通勤时间（往返，分钟）：",
+                transport: "交通方式：",
+                auto: "汽车",
+                public: "公共交通",
+                fuelConsumption: "油耗（升/100公里）：",
+                fuelPrice: "油价（¥/升）：",
+                getFuelPriceBtn: "获取实时油价",
+                loadingBtn: "获取中...",
+                loadingInfo: "正在获取实时油价数据...",
+                publicCost: "公共交通月费用（¥）：",
+                includeTimeCost: "计算时间成本",
+                monthlySalary: "月净收入（¥）：",
+                workDaysPerWeek: "每周工作天数：",
+                resultName: "结果名称：",
+                calculateButton: "计算并保存",
+                savedResults: "已保存结果",
+                noResults: "暂无保存结果。",
+                result: "结果：",
+                monthlyFuelCost: "月燃油费用：¥",
+                monthlyPublicCost: "月公共交通费用：¥",
+                monthlyTimeCost: "月时间成本：¥",
+                hourlyWage: "时薪：¥",
+                totalMonthlyCost: "月通勤总成本：¥",
+                percentageOfSalary: "占您净收入的%。",
+                impressum: "法律声明",
+                privacy: "隐私政策",
+                // 错误消息
+                invalidDistance: "请输入有效距离（0.1-1000公里）。",
+                invalidTime: "请输入有效通勤时间（1-600分钟）。",
+                invalidName: "无效结果名称。不允许脚本，最多30个字符。",
+                invalidWorkDays: "请输入有效每周工作天数（1-7）。",
+                invalidFuelConsumption: "请输入有效油耗（1-30升/100公里）。",
+                invalidFuelPrice: "请输入有效油价（0.5-10¥/升）。",
+                invalidPublicCost: "请输入有效公共交通费用（0-1000¥）。",
+                invalidSalary: "请输入有效月净收入（0-100000¥）。"
+            },
+            fr: {
+                title: "Calculateur de Coûts de Transport",
+                h1: "Calculateur de Coûts de Transport",
+                distance: "Distance (aller simple, km):",
+                time: "Temps de trajet total (aller-retour, minutes):",
+                transport: "Moyen de transport:",
+                auto: "Voiture",
+                public: "Transport public",
+                fuelConsumption: "Consommation de carburant (L/100km):",
+                fuelPrice: "Prix du carburant (€/L):",
+                getFuelPriceBtn: "Obtenir le prix en temps réel",
+                loadingBtn: "Chargement...",
+                loadingInfo: "Récupération des prix du carburant en temps réel...",
+                publicCost: "Coût mensuel du transport public (€):",
+                includeTimeCost: "Calculer le coût du temps",
+                monthlySalary: "Salaire net mensuel (€):",
+                workDaysPerWeek: "Jours de travail par semaine:",
+                resultName: "Nom du résultat:",
+                calculateButton: "Calculer et Sauvegarder",
+                savedResults: "Résultats Sauvegardés",
+                noResults: "Aucun résultat sauvegardé.",
+                result: "Résultat:",
+                monthlyFuelCost: "Coût mensuel du carburant: €",
+                monthlyPublicCost: "Coût mensuel du transport public: €",
+                monthlyTimeCost: "Coût mensuel du temps: €",
+                hourlyWage: "Salaire horaire: €",
+                totalMonthlyCost: "Coût total mensuel de transport: €",
+                percentageOfSalary: "C'est % de votre salaire net.",
+                impressum: "Mentions Légales",
+                privacy: "Politique de Confidentialité",
+                // 错误消息
+                invalidDistance: "Veuillez entrer une distance valide (0.1-1000 km).",
+                invalidTime: "Veuillez entrer un temps de trajet valide (1-600 minutes).",
+                invalidName: "Nom de résultat invalide. Aucun script autorisé, max. 30 caractères.",
+                invalidWorkDays: "Veuillez entrer des jours de travail valides par semaine (1-7).",
+                invalidFuelConsumption: "Veuillez entrer une consommation de carburant valide (1-30 L/100km).",
+                invalidFuelPrice: "Veuillez entrer un prix de carburant valide (0.5-10 €/L).",
+                invalidPublicCost: "Veuillez entrer un coût de transport public valide (0-1000 €).",
+                invalidSalary: "Veuillez entrer un salaire net mensuel valide (0-100000 €)."
+            },
+            es: {
+                title: "Calculadora de Costos de Transporte",
+                h1: "Calculadora de Costos de Transporte",
+                distance: "Distancia (ida, km):",
+                time: "Tiempo total de viaje (ida y vuelta, minutos):",
+                transport: "Medio de transporte:",
+                auto: "Coche",
+                public: "Transporte público",
+                fuelConsumption: "Consumo de combustible (L/100km):",
+                fuelPrice: "Precio del combustible (€/L):",
+                getFuelPriceBtn: "Obtener precio en tiempo real",
+                loadingBtn: "Cargando...",
+                loadingInfo: "Obteniendo precios de combustible en tiempo real...",
+                publicCost: "Costo mensual del transporte público (€):",
+                includeTimeCost: "Calcular costo del tiempo",
+                monthlySalary: "Salario neto mensual (€):",
+                workDaysPerWeek: "Días de trabajo por semana:",
+                resultName: "Nombre del resultado:",
+                calculateButton: "Calcular y Guardar",
+                savedResults: "Resultados Guardados",
+                noResults: "No hay resultados guardados.",
+                result: "Resultado:",
+                monthlyFuelCost: "Costo mensual de combustible: €",
+                monthlyPublicCost: "Costo mensual de transporte público: €",
+                monthlyTimeCost: "Costo mensual del tiempo: €",
+                hourlyWage: "Salario por hora: €",
+                totalMonthlyCost: "Costo total mensual de transporte: €",
+                percentageOfSalary: "Eso es % de su salario neto.",
+                impressum: "Aviso Legal",
+                privacy: "Política de Privacidad",
+                // 错误消息
+                invalidDistance: "Por favor ingrese una distancia válida (0.1-1000 km).",
+                invalidTime: "Por favor ingrese un tiempo de viaje válido (1-600 minutos).",
+                invalidName: "Nombre de resultado inválido. No se permiten scripts, máx. 30 caracteres.",
+                invalidWorkDays: "Por favor ingrese días de trabajo válidos por semana (1-7).",
+                invalidFuelConsumption: "Por favor ingrese un consumo de combustible válido (1-30 L/100km).",
+                invalidFuelPrice: "Por favor ingrese un precio de combustible válido (0.5-10 €/L).",
+                invalidPublicCost: "Por favor ingrese un costo de transporte público válido (0-1000 €).",
+                invalidSalary: "Por favor ingrese un salario neto mensual válido (0-100000 €)."
+            },
+            it: {
+                title: "Calcolatore Costi Trasporto",
+                h1: "Calcolatore Costi Trasporto",
+                distance: "Distanza (andata, km):",
+                time: "Tempo totale di viaggio (andata e ritorno, minuti):",
+                transport: "Mezzo di trasporto:",
+                auto: "Auto",
+                public: "Trasporto pubblico",
+                fuelConsumption: "Consumo di carburante (L/100km):",
+                fuelPrice: "Prezzo del carburante (€/L):",
+                getFuelPriceBtn: "Ottieni prezzo in tempo reale",
+                loadingBtn: "Caricamento...",
+                loadingInfo: "Recupero dei prezzi del carburante in tempo reale...",
+                publicCost: "Costo mensile del trasporto pubblico (€):",
+                includeTimeCost: "Calcolare il costo del tempo",
+                monthlySalary: "Stipendio netto mensile (€):",
+                workDaysPerWeek: "Giorni di lavoro per settimana:",
+                resultName: "Nome del risultato:",
+                calculateButton: "Calcola e Salva",
+                savedResults: "Risultati Salvati",
+                noResults: "Nessun risultato salvato.",
+                result: "Risultato:",
+                monthlyFuelCost: "Costo mensile del carburante: €",
+                monthlyPublicCost: "Costo mensile del trasporto pubblico: €",
+                monthlyTimeCost: "Costo mensile del tempo: €",
+                hourlyWage: "Stipendio orario: €",
+                totalMonthlyCost: "Costo totale mensile di trasporto: €",
+                percentageOfSalary: "Questo è % del tuo stipendio netto.",
+                impressum: "Note Legali",
+                privacy: "Informativa sulla Privacy",
+                // 错误消息
+                invalidDistance: "Inserisci una distanza valida (0.1-1000 km).",
+                invalidTime: "Inserisci un tempo di viaggio valido (1-600 minuti).",
+                invalidName: "Nome risultato non valido. Script non consentiti, max. 30 caratteri.",
+                invalidWorkDays: "Inserisci giorni di lavoro validi per settimana (1-7).",
+                invalidFuelConsumption: "Inserisci un consumo di carburante valido (1-30 L/100km).",
+                invalidFuelPrice: "Inserisci un prezzo del carburante valido (0.5-10 €/L).",
+                invalidPublicCost: "Inserisci un costo del trasporto pubblico valido (0-1000 €).",
+                invalidSalary: "Inserisci uno stipendio netto mensile valido (0-100000 €)."
+            },
+            nl: {
+                title: "Woon-werkverkeer Kosten Calculator",
+                h1: "Woon-werkverkeer Kosten Calculator",
+                distance: "Afstand (enkele reis, km):",
+                time: "Totale reistijd (heen en terug, minuten):",
+                transport: "Vervoermiddel:",
+                auto: "Auto",
+                public: "Openbaar vervoer",
+                fuelConsumption: "Brandstofverbruik (L/100km):",
+                fuelPrice: "Brandstofprijs (€/L):",
+                getFuelPriceBtn: "Real-time prijs ophalen",
+                loadingBtn: "Laden...",
+                loadingInfo: "Brandstofprijzen in real-time ophalen...",
+                publicCost: "Maandelijkse kosten openbaar vervoer (€):",
+                includeTimeCost: "Tijdkosten berekenen",
+                monthlySalary: "Maandelijks nettoloon (€):",
+                workDaysPerWeek: "Werkdagen per week:",
+                resultName: "Resultaatnaam:",
+                calculateButton: "Berekenen & Opslaan",
+                savedResults: "Opgeslagen Resultaten",
+                noResults: "Geen opgeslagen resultaten.",
+                result: "Resultaat:",
+                monthlyFuelCost: "Maandelijkse brandstofkosten: €",
+                monthlyPublicCost: "Maandelijkse kosten openbaar vervoer: €",
+                monthlyTimeCost: "Maandelijkse tijdkosten: €",
+                hourlyWage: "Uurloon: €",
+                totalMonthlyCost: "Totale maandelijkse reiskosten: €",
+                percentageOfSalary: "Dat is % van je nettoloon.",
+                impressum: "Colofon",
+                privacy: "Privacybeleid",
+                // 错误消息
+                invalidDistance: "Voer een geldige afstand in (0.1-1000 km).",
+                invalidTime: "Voer een geldige reistijd in (1-600 minuten).",
+                invalidName: "Ongeldige resultaatnaam. Geen scripts toegestaan, max. 30 tekens.",
+                invalidWorkDays: "Voer geldige werkdagen per week in (1-7).",
+                invalidFuelConsumption: "Voer een geldig brandstofverbruik in (1-30 L/100km).",
+                invalidFuelPrice: "Voer een geldige brandstofprijs in (0.5-10 €/L).",
+                invalidPublicCost: "Voer geldige kosten voor openbaar vervoer in (0-1000 €).",
+                invalidSalary: "Voer een geldig maandelijks nettoloon in (0-100000 €)."
+            },
+            pl: {
+                title: "Kalkulator Kosztów Dojazdu",
+                h1: "Kalkulator Kosztów Dojazdu",
+                distance: "Odległość (w jedną stronę, km):",
+                time: "Całkowity czas dojazdu (w obie strony, minuty):",
+                transport: "Środek transportu:",
+                auto: "Samochód",
+                public: "Transport publiczny",
+                fuelConsumption: "Zużycie paliwa (L/100km):",
+                fuelPrice: "Cena paliwa (zł/L):",
+                getFuelPriceBtn: "Pobierz cenę w czasie rzeczywistym",
+                loadingBtn: "Ładowanie...",
+                loadingInfo: "Pobieranie aktualnych cen paliw...",
+                publicCost: "Miesięczny koszt transportu publicznego (zł):",
+                includeTimeCost: "Oblicz koszt czasu",
+                monthlySalary: "Miesięczne wynagrodzenie netto (zł):",
+                workDaysPerWeek: "Dni robocze w tygodniu:",
+                resultName: "Nazwa wyniku:",
+                calculateButton: "Oblicz i Zapisz",
+                savedResults: "Zapisane Wyniki",
+                noResults: "Brak zapisanych wyników.",
+                result: "Wynik:",
+                monthlyFuelCost: "Miesięczny koszt paliwa: zł",
+                monthlyPublicCost: "Miesięczny koszt transportu publicznego: zł",
+                monthlyTimeCost: "Miesięczny koszt czasu: zł",
+                hourlyWage: "Stawka godzinowa: zł",
+                totalMonthlyCost: "Całkowity miesięczny koszt dojazdu: zł",
+                percentageOfSalary: "To jest % twojego wynagrodzenia netto.",
+                impressum: "Stopka Redakcyjna",
+                privacy: "Polityka Prywatności",
+                // 错误消息
+                invalidDistance: "Wprowadź prawidłową odległość (0.1-1000 km).",
+                invalidTime: "Wprowadź prawidłowy czas dojazdu (1-600 minut).",
+                invalidName: "Nieprawidłowa nazwa wyniku. Skrypty niedozwolone, max. 30 znaków.",
+                invalidWorkDays: "Wprowadź prawidłowe dni robocze w tygodniu (1-7).",
+                invalidFuelConsumption: "Wprowadź prawidłowe zużycie paliwa (1-30 L/100km).",
+                invalidFuelPrice: "Wprowadź prawidłową cenę paliwa (0.5-10 zł/L).",
+                invalidPublicCost: "Wprowadź prawidłowy koszt transportu publicznego (0-1000 zł).",
+                invalidSalary: "Wprowadź prawidłowe miesięczne wynagrodzenie netto (0-100000 zł)."
+            }
+        };
+
+        // 当前语言
+        let currentLanguage = 'de';
+
+        // 语言切换函数
+        function changeLanguage(lang) {
+            currentLanguage = lang;
+            const t = translations[lang];
+            
+            // 更新页面标题
+            document.title = t.title;
+            
+            // 更新页面内容
+            document.querySelector('h1').textContent = t.h1;
+            
+            // 更新表单标签 - 只更新文本节点，保留输入字段
+            const distanceLabel = document.querySelector('label[for="distance"]');
+            if (distanceLabel) {
+                // 保留输入字段，只更新文本
+                const input = distanceLabel.querySelector('input');
+                distanceLabel.innerHTML = t.distance;
+                if (input) distanceLabel.appendChild(input);
+            }
+            
+            const timeLabel = document.querySelector('label[for="time"]');
+            if (timeLabel) {
+                const input = timeLabel.querySelector('input');
+                timeLabel.innerHTML = t.time;
+                if (input) timeLabel.appendChild(input);
+            }
+            
+            const commuteTypeLabel = document.querySelector('label[for="commuteType"]');
+            if (commuteTypeLabel) {
+                const select = commuteTypeLabel.querySelector('select');
+                commuteTypeLabel.innerHTML = t.transport;
+                if (select) commuteTypeLabel.appendChild(select);
+            }
+            
+            // 更新选项
+            const autoOption = document.querySelector('#commuteType option[value="auto"]');
+            if (autoOption) {
+                autoOption.textContent = t.auto;
+            }
+            
+            const publicOption = document.querySelector('#commuteType option[value="oeffentlich"]');
+            if (publicOption) {
+                publicOption.textContent = t.public;
+            }
+            
+            // 更新汽车相关字段标签
+            const fuelConsumptionLabel = document.querySelector('label[for="fuelConsumption"]');
+            if (fuelConsumptionLabel) {
+                const input = fuelConsumptionLabel.querySelector('input');
+                fuelConsumptionLabel.innerHTML = t.fuelConsumption;
+                if (input) fuelConsumptionLabel.appendChild(input);
+            }
+            
+
+            
+            const fuelPriceLabel = document.querySelector('label[for="fuelPrice"]');
+            if (fuelPriceLabel) {
+                const input = fuelPriceLabel.querySelector('input');
+                const button = fuelPriceLabel.querySelector('button');
+                fuelPriceLabel.innerHTML = t.fuelPrice;
+                if (input) fuelPriceLabel.appendChild(input);
+                if (button) {
+                    button.textContent = t.getFuelPriceBtn || '获取实时油价';
+                    fuelPriceLabel.appendChild(button);
+                }
+            }
+            
+            // 更新公共交通字段标签
+            const publicCostLabel = document.querySelector('label[for="publicCost"]');
+            if (publicCostLabel) {
+                const input = publicCostLabel.querySelector('input');
+                publicCostLabel.innerHTML = t.publicCost;
+                if (input) publicCostLabel.appendChild(input);
+            }
+            
+            // 更新时间成本相关标签
+            const timeCostLabel = document.querySelector('label[for="includeTimeCost"]');
+            if (timeCostLabel) {
+                const checkbox = timeCostLabel.querySelector('input');
+                timeCostLabel.innerHTML = t.includeTimeCost;
+                if (checkbox) timeCostLabel.appendChild(checkbox);
+            }
+            
+            const salaryLabel = document.querySelector('label[for="monthlySalary"]');
+            if (salaryLabel) {
+                const input = salaryLabel.querySelector('input');
+                salaryLabel.innerHTML = t.monthlySalary;
+                if (input) salaryLabel.appendChild(input);
+            }
+            
+            const workDaysLabel = document.querySelector('label[for="workDaysPerWeek"]');
+            if (workDaysLabel) {
+                const input = workDaysLabel.querySelector('input');
+                workDaysLabel.innerHTML = t.workDaysPerWeek;
+                if (input) workDaysLabel.appendChild(input);
+            }
+            
+            // 更新结果名称标签
+            const resultNameLabel = document.querySelector('label[for="resultName"]');
+            if (resultNameLabel) {
+                const input = resultNameLabel.querySelector('input');
+                resultNameLabel.innerHTML = t.resultName;
+                if (input) resultNameLabel.appendChild(input);
+            }
+            
+            // 更新按钮
+            const submitButton = document.querySelector('button[type="submit"]');
+            if (submitButton) {
+                submitButton.textContent = t.calculateButton;
+            }
+            
+            // 更新保存结果标题
+            const savedResultsTitle = document.querySelector('.saved-results h2');
+            if (savedResultsTitle) {
+                savedResultsTitle.textContent = t.savedResults;
+            }
+            
+            // 更新页脚链接
+            const impressumLink = document.getElementById('impressumLink');
+            if (impressumLink) {
+                impressumLink.textContent = t.impressum;
+            }
+            
+            const datenschutzLink = document.getElementById('datenschutzLink');
+            if (datenschutzLink) {
+                datenschutzLink.textContent = t.privacy;
+            }
+            
+            // 重新加载保存的结果
+            loadResults();
+        }
+
+        // 语言选择器事件监听
+        document.getElementById('languageSelect').addEventListener('change', function() {
+            const selectedLang = this.value;
+            localStorage.setItem('selectedLanguage', selectedLang);
+            changeLanguage(selectedLang);
+        });
+
         const commuteType = document.getElementById('commuteType');
         const autoFields = document.getElementById('autoFields');
         const oeffentlichFields = document.getElementById('oeffentlichFields');
@@ -238,7 +701,8 @@
             const results = JSON.parse(localStorage.getItem('commuteResults') || '[]');
             savedResultsDiv.innerHTML = '';
             if (results.length === 0) {
-                savedResultsDiv.innerHTML = '<em>Keine gespeicherten Ergebnisse.</em>';
+                const t = translations[currentLanguage];
+                savedResultsDiv.innerHTML = `<em>${t.noResults}</em>`;
                 return;
             }
             results.forEach(r => {
@@ -248,54 +712,56 @@
 
         form.addEventListener('submit', function(e) {
             e.preventDefault();
+            const t = translations[currentLanguage];
+            
             // 校验输入
             const distance = parseFloat(document.getElementById('distance').value);
             const time = parseFloat(document.getElementById('time').value);
             const type = commuteType.value;
             const name = document.getElementById('resultName').value.trim();
-            if (isNaN(distance) || distance < 0.1 || distance > 1000) { alert('Bitte geben Sie eine gültige Entfernung (0.1-1000 km) ein.'); return; }
-            if (isNaN(time) || time < 1 || time > 600) { alert('Bitte geben Sie eine gültige Pendelzeit (1-600 Minuten) ein.'); return; }
-            if (!name || name.length > 30 || /<\/?script/i.test(name)) { alert('Ungültiger Ergebnisname. Keine Scripte erlaubt, max. 30 Zeichen.'); return; }
+            if (isNaN(distance) || distance < 0.1 || distance > 1000) { alert(t.invalidDistance); return; }
+            if (isNaN(time) || time < 1 || time > 600) { alert(t.invalidTime); return; }
+            if (!name || name.length > 30 || /<\/?script/i.test(name)) { alert(t.invalidName); return; }
             let cost = 0, timeCost = 0, hourly = 0, monthlySalary = 0, summary = '';
             let workDays = 22; // 默认
             if (includeTimeCost.checked) {
                 const workDaysPerWeek = parseFloat(document.getElementById('workDaysPerWeek').value) || 5;
-                if (isNaN(workDaysPerWeek) || workDaysPerWeek < 1 || workDaysPerWeek > 7) { alert('Bitte geben Sie gültige Arbeitstage pro Woche (1-7) ein.'); return; }
+                if (isNaN(workDaysPerWeek) || workDaysPerWeek < 1 || workDaysPerWeek > 7) { alert(t.invalidWorkDays); return; }
                 workDays = workDaysPerWeek * 4.33;
             }
 
             if (type === 'auto') {
                 const fuelConsumption = parseFloat(document.getElementById('fuelConsumption').value);
                 const fuelPrice = parseFloat(document.getElementById('fuelPrice').value);
-                if (isNaN(fuelConsumption) || fuelConsumption < 1 || fuelConsumption > 30) { alert('Bitte geben Sie einen gültigen Kraftstoffverbrauch (1-30 L/100km) ein.'); return; }
-                if (isNaN(fuelPrice) || fuelPrice < 0.5 || fuelPrice > 10) { alert('Bitte geben Sie einen gültigen Kraftstoffpreis (0.5-10 €/L) ein.'); return; }
+                if (isNaN(fuelConsumption) || fuelConsumption < 1 || fuelConsumption > 30) { alert(t.invalidFuelConsumption); return; }
+                if (isNaN(fuelPrice) || fuelPrice < 0.5 || fuelPrice > 10) { alert(t.invalidFuelPrice); return; }
                 const totalDistance = distance * 2 * workDays;
                 const fuelUsed = totalDistance * (fuelConsumption / 100);
                 cost = fuelUsed * fuelPrice;
-                summary += `Monatliche Kraftstoffkosten: €${cost.toFixed(2)}<br>`;
+                summary += `${t.monthlyFuelCost}${cost.toFixed(2)}<br>`;
             } else {
                 const publicCost = parseFloat(document.getElementById('publicCost').value);
-                if (isNaN(publicCost) || publicCost < 0 || publicCost > 1000) { alert('Bitte geben Sie gültige Kosten für öffentliche Verkehrsmittel (0-1000 €) ein.'); return; }
+                if (isNaN(publicCost) || publicCost < 0 || publicCost > 1000) { alert(t.invalidPublicCost); return; }
                 cost = publicCost;
-                summary += `Monatliche Kosten für öffentliche Verkehrsmittel: €${cost.toFixed(2)}<br>`;
+                summary += `${t.monthlyPublicCost}${cost.toFixed(2)}<br>`;
             }
 
             if (includeTimeCost.checked) {
                 monthlySalary = parseFloat(document.getElementById('monthlySalary').value);
-                if (isNaN(monthlySalary) || monthlySalary < 0 || monthlySalary > 100000) { alert('Bitte geben Sie ein gültiges Monatsnettogehalt (0-100000 €) ein.'); return; }
+                if (isNaN(monthlySalary) || monthlySalary < 0 || monthlySalary > 100000) { alert(t.invalidSalary); return; }
                 hourly = monthlySalary / (workDays * 8);
                 timeCost = time * workDays * (hourly / 60);
-                summary += `Monatliche Zeitkosten: €${timeCost.toFixed(2)} (Stundenlohn: €${hourly.toFixed(2)})<br>`;
+                summary += `${t.monthlyTimeCost}${timeCost.toFixed(2)} (${t.hourlyWage}${hourly.toFixed(2)})<br>`;
             }
 
             const totalCost = cost + timeCost;
-            summary += `<strong>Gesamte monatliche Pendelkosten: €${totalCost.toFixed(2)}</strong><br>`;
+            summary += `<strong>${t.totalMonthlyCost}${totalCost.toFixed(2)}</strong><br>`;
             if (monthlySalary > 0) {
                 const percent = (totalCost / monthlySalary) * 100;
-                summary += `Das sind ${(percent).toFixed(2)}% Ihres Nettogehalts.`;
+                summary += `${t.percentageOfSalary.replace('%', (percent).toFixed(2) + '%')}`;
             }
 
-            resultDiv.innerHTML = `<h3>Ergebnis: ${name}</h3>${summary}`;
+            resultDiv.innerHTML = `<h3>${t.result} ${name}</h3>${summary}`;
             resultDiv.classList.remove('hidden');
 
             const results = JSON.parse(localStorage.getItem('commuteResults') || '[]');
@@ -305,6 +771,238 @@
         });
 
         loadResults();
+        
+        // 油价获取功能 - 使用事件委托，避免语言切换后失效
+        document.addEventListener('click', function(e) {
+            if (e.target && e.target.id === 'getFuelPriceBtn') {
+                getFuelPrice();
+            }
+        });
+        
+        // 获取实时油价函数
+        async function getFuelPrice() {
+            const fuelPriceInfo = document.getElementById('fuelPriceInfo');
+            const fuelPriceInput = document.getElementById('fuelPrice');
+            const btn = document.getElementById('getFuelPriceBtn');
+            
+            // 检查必要元素是否存在
+            if (!fuelPriceInfo || !fuelPriceInput || !btn) {
+                console.error('油价获取功能所需的元素不存在:', {
+                    fuelPriceInfo: !!fuelPriceInfo,
+                    fuelPriceInput: !!fuelPriceInput,
+                    btn: !!btn
+                });
+                return;
+            }
+            
+            // 显示加载状态
+            const t = translations[currentLanguage];
+            btn.textContent = t.loadingBtn || t.getFuelPriceBtn || 'Loading...';
+            btn.disabled = true;
+            fuelPriceInfo.textContent = t.loadingInfo || '';
+            fuelPriceInfo.style.color = '#007700';
+            
+            try {
+                // 根据当前语言选择对应的油价数据源
+                const currentLang = currentLanguage;
+                let currency = '€';
+                let country = 'Germany';
+                let countryName = 'Germany';
+                
+                // 模拟不同国家的油价数据（实际应用中应该调用真实API）
+                const fuelPrices = {
+                    'de': {
+                        currency: '€',
+                        country: 'Germany',
+                        countryName: '德国',
+                        prices: {
+                            'Benzin (95)': 1.85,
+                            'Benzin (98)': 1.95,
+                            'Diesel': 1.75,
+                            'E10': 1.80
+                        }
+                    },
+                    'en': {
+                        currency: '$',
+                        country: 'USA',
+                        countryName: '美国',
+                        prices: {
+                            'Gasoline (95)': 3.50,
+                            'Gasoline (98)': 3.80,
+                            'Diesel': 3.20,
+                            'E10': 3.30
+                        }
+                    },
+                    'zh': {
+                        currency: '¥',
+                        country: 'China',
+                        countryName: '中国',
+                        prices: {
+                            '汽油（95号）': 7.20,
+                            '汽油（98号）': 7.80,
+                            '柴油': 6.50,
+                            'E10乙醇汽油': 6.80
+                        }
+                    },
+                    'fr': {
+                        currency: '€',
+                        country: 'France',
+                        countryName: '法国',
+                        prices: {
+                            'Essence (95)': 1.90,
+                            'Essence (98)': 2.00,
+                            'Diesel': 1.80,
+                            'E10': 1.85
+                        }
+                    },
+                    'es': {
+                        currency: '€',
+                        country: 'Spain',
+                        countryName: '西班牙',
+                        prices: {
+                            'Gasolina (95)': 1.75,
+                            'Gasolina (98)': 1.85,
+                            'Diésel': 1.65,
+                            'E10': 1.70
+                        }
+                    },
+                    'it': {
+                        currency: '€',
+                        country: 'Italy',
+                        countryName: '意大利',
+                        prices: {
+                            'Benzina (95)': 1.88,
+                            'Benzina (98)': 1.98,
+                            'Diesel': 1.78,
+                            'E10': 1.83
+                        }
+                    },
+                    'nl': {
+                        currency: '€',
+                        country: 'Netherlands',
+                        countryName: '荷兰',
+                        prices: {
+                            'Benzine (95)': 1.92,
+                            'Benzine (98)': 2.02,
+                            'Diesel': 1.82,
+                            'E10': 1.87
+                        }
+                    },
+                    'pl': {
+                        currency: 'zł',
+                        country: 'Poland',
+                        countryName: '波兰',
+                        prices: {
+                            'Benzyna (95)': 6.50,
+                            'Benzyna (98)': 6.80,
+                            'Diesel': 6.20,
+                            'E10': 6.35
+                        }
+                    }
+                };
+                
+                const countryData = fuelPrices[currentLang] || fuelPrices['de'];
+                currency = countryData.currency;
+                country = countryData.country;
+                countryName = countryData.countryName;
+                
+                // 模拟网络延迟
+                await new Promise(resolve => setTimeout(resolve, 1500));
+                
+                // 生成所有燃油类型的价格列表
+                let priceList = '';
+                Object.entries(countryData.prices).forEach(([fuelType, price]) => {
+                    priceList += `${fuelType}: ${currency}${price.toFixed(2)}/L<br>`;
+                });
+                
+                // 设置默认价格为95号汽油价格
+                const defaultPrice = countryData.prices[Object.keys(countryData.prices)[0]];
+                fuelPriceInput.value = defaultPrice.toFixed(2);
+                
+                // 根据当前语言显示对应的成功信息
+                let successMessage = '';
+                switch(currentLang) {
+                    case 'de':
+                        successMessage = `✅ ${countryName} 当前油价:<br>${priceList}<small>数据更新时间: ${new Date().toLocaleString('de-DE')}</small>`;
+                        break;
+                    case 'en':
+                        successMessage = `✅ ${countryName} current fuel prices:<br>${priceList}<small>Data updated: ${new Date().toLocaleString('en-US')}</small>`;
+                        break;
+                    case 'zh':
+                        successMessage = `✅ ${countryName} 当前油价:<br>${priceList}<small>数据更新时间: ${new Date().toLocaleString('zh-CN')}</small>`;
+                        break;
+                    case 'fr':
+                        successMessage = `✅ ${countryName} prix actuels du carburant:<br>${priceList}<small>Données mises à jour: ${new Date().toLocaleString('fr-FR')}</small>`;
+                        break;
+                    case 'es':
+                        successMessage = `✅ ${countryName} precios actuales del combustible:<br>${priceList}<small>Datos actualizados: ${new Date().toLocaleString('es-ES')}</small>`;
+                        break;
+                    case 'it':
+                        successMessage = `✅ ${countryName} prezzi attuali del carburante:<br>${priceList}<small>Dati aggiornati: ${new Date().toLocaleString('it-IT')}</small>`;
+                        break;
+                    case 'nl':
+                        successMessage = `✅ ${countryName} huidige brandstofprijzen:<br>${priceList}<small>Gegevens bijgewerkt: ${new Date().toLocaleString('nl-NL')}</small>`;
+                        break;
+                    case 'pl':
+                        successMessage = `✅ ${countryName} aktualne ceny paliwa:<br>${priceList}<small>Dane zaktualizowane: ${new Date().toLocaleString('pl-PL')}</small>`;
+                        break;
+                    default:
+                        successMessage = `✅ ${countryName} current fuel prices:<br>${priceList}<small>Data updated: ${new Date().toLocaleString()}</small>`;
+                }
+                
+                fuelPriceInfo.innerHTML = successMessage;
+                fuelPriceInfo.style.color = '#28a745';
+                
+            } catch (error) {
+                // 根据当前语言显示错误信息
+                let errorMessage = '';
+                switch(currentLang) {
+                    case 'de':
+                        errorMessage = '❌ Fehler beim Abrufen der Kraftstoffpreise. Bitte manuell eingeben.';
+                        break;
+                    case 'en':
+                        errorMessage = '❌ Failed to get fuel prices. Please enter manually.';
+                        break;
+                    case 'zh':
+                        errorMessage = '❌ 获取油价失败，请手动输入';
+                        break;
+                    case 'fr':
+                        errorMessage = '❌ Échec de la récupération des prix du carburant. Veuillez saisir manuellement.';
+                        break;
+                    case 'es':
+                        errorMessage = '❌ Error al obtener precios de combustible. Por favor ingrese manualmente.';
+                        break;
+                    case 'it':
+                        errorMessage = '❌ Impossibile ottenere i prezzi del carburante. Inserisci manualmente.';
+                        break;
+                    case 'nl':
+                        errorMessage = '❌ Kan brandstofprijzen niet ophalen. Voer handmatig in.';
+                        break;
+                    case 'pl':
+                        errorMessage = '❌ Nie udało się pobrać cen paliwa. Wprowadź ręcznie.';
+                        break;
+                    default:
+                        errorMessage = '❌ Failed to get fuel prices. Please enter manually.';
+                }
+                
+                fuelPriceInfo.textContent = errorMessage;
+                fuelPriceInfo.style.color = '#dc3545';
+                console.error('获取油价失败:', error);
+            } finally {
+                // 恢复按钮状态
+                const t = translations[currentLanguage];
+                btn.textContent = t.getFuelPriceBtn || '获取实时油价';
+                btn.disabled = false;
+            }
+        }
+        
+        // 页面加载时初始化语言
+        document.addEventListener('DOMContentLoaded', function() {
+            // 尝试从localStorage获取用户之前选择的语言
+            const savedLanguage = localStorage.getItem('selectedLanguage') || 'de';
+            document.getElementById('languageSelect').value = savedLanguage;
+            changeLanguage(savedLanguage);
+        });
     </script>
     <!-- Footer with Impressum & Datenschutz -->
     <footer style="width:100%;background:#f6f8fa;border-top:1px solid #e0e4ea;margin-top:40px;padding:18px 0 10px 0;text-align:center;font-size:1em;">
@@ -345,13 +1043,6 @@
       </div>
     </div>
 
-    <!-- Cookie Hinweis Banner -->
-    <div id="cookieBanner" style="display:block;position:fixed;bottom:0;left:0;width:100vw;background:#fff3cd;color:#333;padding:12px 0;text-align:center;z-index:1002;box-shadow:0 -2px 8px rgba(0,0,0,0.04);font-size:1em;">
-      Diese Website verwendet Cookies und Google Ads. Mit der Nutzung stimmen Sie der Verwendung zu.
-      <button id="cookieAccept" style="margin-left:18px;padding:4px 18px;border-radius:6px;border:none;background:#0077cc;color:#fff;cursor:pointer;">OK</button>
-      <button id="cookieReject" style="margin-left:10px;padding:4px 18px;border-radius:6px;border:none;background:#bbb;color:#333;cursor:pointer;">Ablehnen</button>
-    </div>
-
     <script>
       document.getElementById('impressumLink').onclick = function(e) { e.preventDefault(); document.getElementById('impressumModal').style.display = 'block'; };
       document.getElementById('datenschutzLink').onclick = function(e) { e.preventDefault(); document.getElementById('datenschutzModal').style.display = 'block'; };
@@ -364,72 +1055,6 @@
       };
       document.getElementById('datenschutzModal').onclick = function(e) {
         if (e.target === this) this.style.display = 'none';
-      };
-      // Google Ads 动态加载函数（四个广告位）
-      function loadGoogleAds() {
-        var adsense = document.createElement('script');
-        adsense.async = true;
-        adsense.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js';
-        adsense.setAttribute('data-ad-client', 'ca-pub-XXXXXXXXXXXXXXXX'); // TODO: 替换为你自己的AdSense Publisher ID
-        document.head.appendChild(adsense);
-        // 右1
-        var ad1 = document.createElement('ins');
-        ad1.className = 'adsbygoogle';
-        ad1.style.display = 'block';
-        ad1.style.width = '300px';
-        ad1.style.height = '250px';
-        ad1.setAttribute('data-ad-client', 'ca-pub-XXXXXXXXXXXXXXXX');
-        ad1.setAttribute('data-ad-slot', '1111111111'); // TODO: 替换为你的广告单元ID
-        document.getElementById('adsenseContainer1').innerHTML = '';
-        document.getElementById('adsenseContainer1').appendChild(ad1);
-        // 右2
-        var ad2 = document.createElement('ins');
-        ad2.className = 'adsbygoogle';
-        ad2.style.display = 'block';
-        ad2.style.width = '300px';
-        ad2.style.height = '600px';
-        ad2.setAttribute('data-ad-client', 'ca-pub-XXXXXXXXXXXXXXXX');
-        ad2.setAttribute('data-ad-slot', '2222222222');
-        document.getElementById('adsenseContainer2').innerHTML = '';
-        document.getElementById('adsenseContainer2').appendChild(ad2);
-        // 左1
-        var ad3 = document.createElement('ins');
-        ad3.className = 'adsbygoogle';
-        ad3.style.display = 'block';
-        ad3.style.width = '300px';
-        ad3.style.height = '250px';
-        ad3.setAttribute('data-ad-client', 'ca-pub-XXXXXXXXXXXXXXXX');
-        ad3.setAttribute('data-ad-slot', '3333333333');
-        document.getElementById('adsenseContainer3').innerHTML = '';
-        document.getElementById('adsenseContainer3').appendChild(ad3);
-        // 左2
-        var ad4 = document.createElement('ins');
-        ad4.className = 'adsbygoogle';
-        ad4.style.display = 'block';
-        ad4.style.width = '300px';
-        ad4.style.height = '600px';
-        ad4.setAttribute('data-ad-client', 'ca-pub-XXXXXXXXXXXXXXXX');
-        ad4.setAttribute('data-ad-slot', '4444444444');
-        document.getElementById('adsenseContainer4').innerHTML = '';
-        document.getElementById('adsenseContainer4').appendChild(ad4);
-        (window.adsbygoogle = window.adsbygoogle || []).push({});
-        (window.adsbygoogle = window.adsbygoogle || []).push({});
-        (window.adsbygoogle = window.adsbygoogle || []).push({});
-        (window.adsbygoogle = window.adsbygoogle || []).push({});
-      }
-      // Cookie Banner 按钮事件
-      document.getElementById('cookieAccept').onclick = function() {
-        document.getElementById('cookieBanner').style.display = 'none';
-        window.adsConsent = true;
-        loadGoogleAds();
-      };
-      document.getElementById('cookieReject').onclick = function() {
-        document.getElementById('cookieBanner').style.display = 'none';
-        window.adsConsent = false;
-        document.getElementById('adsenseContainer1').innerHTML = '<span style="color:#bbb;">Google Ads</span>';
-        document.getElementById('adsenseContainer2').innerHTML = '<span style="color:#bbb;">Google Ads</span>';
-        document.getElementById('adsenseContainer3').innerHTML = '<span style="color:#bbb;">Google Ads</span>';
-        document.getElementById('adsenseContainer4').innerHTML = '<span style="color:#bbb;">Google Ads</span>';
       };
     </script>
 </body>
